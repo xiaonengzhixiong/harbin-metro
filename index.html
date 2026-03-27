@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>哈尔滨地铁动态运行图</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <div class="canvas-container">
+            <canvas id="metroCanvas"></canvas>
+        </div>
+        <div class="controls-panel">
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="color-box" style="background: #C8102E;"></span>
+                    <span class="line-name">1号线</span>
+                    <span class="train-count" id="trainCountLine1">0</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box" style="background: #00AB59;"></span>
+                    <span class="line-name">2号线</span>
+                    <span class="train-count" id="trainCountLine2">0</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box" style="background: #FFC72C;"></span>
+                    <span class="line-name">3号线</span>
+                    <span class="train-count" id="trainCountLine3">0</span>
+                </div>
+                <div class="total-count">
+                    上线总数: <span id="totalTrainCount">0</span> 列
+                </div>
+            </div>
+            <div class="control-buttons">
+                <button id="playPauseBtn">⏸ 暂停</button>
+            </div>
+            <div class="slider-container">
+                <span>时间</span>
+                <input type="range" id="timeSlider" min="0" max="86400" step="60" value="0">
+                <span id="timeDisplay">05:30:00</span>
+            </div>
+            <div class="slider-container">
+                <span>速度</span>
+                <input type="range" id="speedSlider" min="0" max="4" step="1" value="1">
+                <span id="speedDisplay">30x</span>
+            </div>
+            <div id="tooltip" class="tooltip" style="display: none;"></div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>
