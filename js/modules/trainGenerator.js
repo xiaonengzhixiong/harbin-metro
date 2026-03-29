@@ -118,8 +118,8 @@ export function generateAllTrains() {
   trains.push(...generateTrainsForDirection('1号线', '上行', LINE1_STATIONS_UP, SEGMENT_TIMES_1_UP, 's23', 's1', 1));
   trains.push(...generateTrainsForDirection('1号线', '下行', LINE1_STATIONS_DOWN, SEGMENT_TIMES_1_DOWN, 's1', 's23', 1000));
 
-  trains.push(...generateTrainsForDirection('2号线', '上行', LINE2_STATIONS_UP, SEGMENT_TIMES_2_UP, 's42', 's24', 2000));
-  trains.push(...generateTrainsForDirection('2号线', '下行', LINE2_STATIONS_DOWN, SEGMENT_TIMES_2_DOWN, 's24', 's42', 3000));
+  trains.push(...generateTrainsForDirection('2号线', '下行', LINE2_STATIONS_UP, SEGMENT_TIMES_2_UP, 's42', 's24', 2000));
+  trains.push(...generateTrainsForDirection('2号线', '上行', LINE2_STATIONS_DOWN, SEGMENT_TIMES_2_DOWN, 's24', 's42', 3000));
 
   // 3号线：内环（顺时针）从进乡街(s57)出发，顺时针运行一圈回到进乡街(s57)
   const innerLoop = buildInnerLoop();
