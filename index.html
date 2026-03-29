@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>哈尔滨地铁动态运行图</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app">
@@ -13,6 +13,7 @@
             <canvas id="metroCanvas"></canvas>
         </div>
         <div class="controls-panel">
+            <div class="big-time" id="bigTimeDisplay">05:30:00</div>
             <div class="legend">
                 <div class="legend-item">
                     <span class="color-box" style="background: #C8102E;"></span>
@@ -36,19 +37,27 @@
             <div class="control-buttons">
                 <button id="playPauseBtn">⏸ 暂停</button>
             </div>
-            <div class="slider-container">
-                <span>时间</span>
-                <input type="range" id="timeSlider" min="0" max="86400" step="60" value="0">
-                <span id="timeDisplay">05:30:00</span>
+
+            <!-- 时间控制区域：标签+数值一行，滑块单独一行 -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span class="slider-label">时间</span>
+                </div>
+                <input type="range" id="timeSlider" class="slider" min="0" max="86400" step="60" value="0">
             </div>
-            <div class="slider-container">
-                <span>速度</span>
-                <input type="range" id="speedSlider" min="0" max="4" step="1" value="1">
-                <span id="speedDisplay">30x</span>
+
+            <!-- 速度控制区域：标签+数值一行，滑块单独一行 -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span class="slider-label">速度</span>
+                    <span class="slider-value" id="speedDisplay">30x</span>
+                </div>
+                <input type="range" id="speedSlider" class="slider" min="0" max="20" step="1" value="3">
             </div>
+
             <div id="tooltip" class="tooltip" style="display: none;"></div>
         </div>
     </div>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
