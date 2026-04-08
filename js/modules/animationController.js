@@ -33,8 +33,8 @@ export class AnimationController {
 
     if (this.isPlaying) {
       this.simTime += delta * this.speed;
-      if (this.simTime > OPERATION.lastTrain + 3600) {
-        this.simTime = OPERATION.firstTrain;
+      if (this.simTime >= 86400) {
+        this.simTime = 0;
       }
       this.update();
     }

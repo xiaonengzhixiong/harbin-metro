@@ -108,12 +108,42 @@ function generateLine3Trains(direction, stationSeq, segmentTimes, startId, start
 
   const NORMAL_INTERVAL = 480; // 8分钟
 
-  // 1. 基础列车：10列，从首班车开始按8分钟间隔发车，全天运行至运营结束
+  // 计算从出库点到回库点的运行时间（沿运行方向）
+  const depotOut = startId;      // 内环 s57，外环 s56
+  const depotIn = (startId === 's57') ? 's56' : 's57';
+  const idxOut = stationSeq.indexOf(depotOut);
+  const idxIn = stationSeq.indexOf(depotIn);
+  let timeOutToIn = 0;
+  if (idxIn > idxOut) {
+    for (let i = idxOut; i < idxIn; i++) timeOutToIn += segmentTimes[i];
+  } else {
+    for (let i = idxOut; i < stationSeq.length - 1; i++) timeOutToIn += segmentTimes[i];
+    for (let i = 0; i < idxIn; i++) timeOutToIn += segmentTimes[i];
+  }
+
+  // 1. 基础列车：10列，从首班车开始按8分钟间隔发车
   const baseCount = 10;
   for (let i = 0; i < baseCount; i++) {
     const startTime = OPERATION.firstTrain + i * NORMAL_INTERVAL;
     if (startTime > OPERATION.lastTrain + loopTime) continue;
-    const endTime = OPERATION.lastTrain + loopTime; // 运营结束后跑完一圈退库
+
+    // 计算运营结束后第一次到达回库站的时间
+    // 首先计算列车第一次到达回库站的时间（可能早于或晚于运营结束）
+    const firstArrivalAtDepotIn = startTime + timeOutToIn;
+    let endTime;
+    if (firstArrivalAtDepotIn > OPERATION.lastTrain) {
+      // 如果第一次到达回库站已经在运营结束之后，则直接在此退出
+      endTime = firstArrivalAtDepotIn;
+    } else {
+      // 否则，需要再跑若干圈，直到某一次到达回库站的时间大于运营结束
+      // 计算需要增加的圈数
+      const delta = OPERATION.lastTrain - firstArrivalAtDepotIn;
+      const extraLoops = Math.floor(delta / loopTime) + 1;
+      endTime = firstArrivalAtDepotIn + extraLoops * loopTime;
+    }
+    // 确保结束时间大于发车时间
+    if (endTime <= startTime) continue;
+
     const firstLoopStationTimes = {};
     stationSeq.forEach((sid, idx) => {
       firstLoopStationTimes[sid] = startTime + cumTimes[idx];
@@ -136,29 +166,13 @@ function generateLine3Trains(direction, stationSeq, segmentTimes, startId, start
     });
   }
 
-  // 计算从出库点到回库点的运行时间（沿运行方向）
-  const depotOut = startId;      // 内环 s57，外环 s56
-  const depotIn = (startId === 's57') ? 's56' : 's57';
-  const idxOut = stationSeq.indexOf(depotOut);
-  const idxIn = stationSeq.indexOf(depotIn);
-  let timeOutToIn = 0;
-  if (idxIn > idxOut) {
-    for (let i = idxOut; i < idxIn; i++) timeOutToIn += segmentTimes[i];
-  } else {
-    // 逆时针情况：从出库点出发到回库点需要经过末尾绕一圈
-    for (let i = idxOut; i < stationSeq.length - 1; i++) timeOutToIn += segmentTimes[i];
-    for (let i = 0; i < idxIn; i++) timeOutToIn += segmentTimes[i];
-  }
-
-  // 2. 生成加车时刻表（严格按照用户要求）
-  // 早高峰加车：7:04, 7:12, ..., 8:08
+  // 2. 加车时刻表（保持不变）
   const morningExtraTimes = [];
   const firstMorningExtra = morningStart + 4 * 60; // 7:04
   for (let i = 0; i < 9; i++) {
     const t = firstMorningExtra + i * NORMAL_INTERVAL;
     if (t <= morningEnd) morningExtraTimes.push(t);
   }
-  // 晚高峰加车：17:02, 17:10, ..., 18:06
   const eveningExtraTimes = [];
   const firstEveningExtra = eveningStart + 2 * 60; // 17:02
   for (let i = 0; i < 9; i++) {
@@ -175,7 +189,6 @@ function generateLine3Trains(direction, stationSeq, segmentTimes, startId, start
     if (firstArrivalAtDepotIn > morningEnd) {
       endTime = firstArrivalAtDepotIn;
     } else {
-      // 若在高峰结束前已经过回库点，则再跑一圈后到达回库点
       endTime = firstArrivalAtDepotIn + loopTime;
     }
     if (endTime <= startTime) continue;
