@@ -306,7 +306,7 @@ input[type="range"]::-webkit-slider-thumb {
     background: #F9F9F9;
     color: #000000;
     font-family: 'Digital-7 Mono', 'Courier New', monospace;
-    font-size: 50px;
+    font-size: 52px;
     font-weight: normal;
     text-align: center;
     padding: 16px 8px;
@@ -323,4 +323,27 @@ input[type="range"]::-webkit-slider-thumb {
     font-weight: normal;
     font-style: normal;
     font-display: swap;
+}
+
+.controls-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-container {
+    margin-top: auto;          /* 将容器推到侧边栏底部 */
+    display: flex;
+    justify-content: flex-end; /* 水平右对齐 */
+    padding: 16px 0 0 0;       /* 可选：上方留白，避免紧贴内容 */
+}
+
+.metro-logo {
+    max-width: 120px;          /* 限制最大宽度，避免过大 */
+    height: auto;              /* 保持比例 */
+    opacity: 0.8;              /* 可选：半透明，更低调 */
+    transition: opacity 0.2s;
+}
+
+.metro-logo:hover {
+    opacity: 1;
 }

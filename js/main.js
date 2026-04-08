@@ -13,7 +13,49 @@ class TrainManager {
   getTrainsAtTime(now) {
     const result = [];
     for (const train of this.trains) {
-      if (now >= train.startTime && now <= train.endTime) {
+      if (now < train.startTime || now > train.endTime) continue;
+
+      // 处理3号线（多圈）
+      if (train.line === '3号线' && train.loopTime) {
+        const elapsed = now - train.startTime;
+        const loopTime = train.loopTime;
+        let offsetInLoop = elapsed % loopTime;
+        // 找到当前所在的区间
+        let cum = 0;
+        let segmentIdx = -1;
+        let segmentStartTime = train.startTime;
+        for (let i = 0; i < train.segmentTimes.length; i++) {
+          const nextCum = cum + train.segmentTimes[i];
+          if (offsetInLoop >= cum && offsetInLoop <= nextCum) {
+            segmentIdx = i;
+            segmentStartTime = train.startTime + cum;
+            break;
+          }
+          cum = nextCum;
+        }
+        if (segmentIdx === -1) continue;
+
+        const startStationId = train.stationSeq[segmentIdx];
+        const endStationId = train.stationSeq[segmentIdx + 1];
+        const segmentDuration = train.segmentTimes[segmentIdx];
+        const elapsedInSegment = offsetInLoop - (segmentStartTime - train.startTime);
+        const ratio = elapsedInSegment / segmentDuration;
+        const startStation = this.stations.find(s => s.id === startStationId);
+        const endStation = this.stations.find(s => s.id === endStationId);
+        if (!startStation || !endStation) continue;
+
+        result.push({
+          trainId: train.id,
+          direction: train.direction,
+          line: train.line,
+          startStation: startStation,
+          endStation: endStation,
+          ratio: ratio,
+          currentSegment: `${startStation.name} → ${endStation.name}`
+        });
+      }
+      // 处理1、2号线（原有逻辑）
+      else {
         let currentSegmentIdx = -1;
         let segmentStartTime = train.startTime;
         for (let i = 0; i < train.stationIds.length - 1; i++) {

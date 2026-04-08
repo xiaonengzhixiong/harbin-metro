@@ -104,51 +104,52 @@ export class MapRenderer {
   }
 
   drawStations() {
-    const showAllLabels = this.scale >= this.labelThreshold;
-    const baseFontSize = 14;      // 正常显示的字体大小（像素）
-    const minFontSize = 10;       // 最小字体大小
+  const showAllLabels = this.scale >= this.labelThreshold;
+  const baseFontSize = 14;
+  const minFontSize = 10;
 
-    for (const station of this.stations) {
-      // 绘制圆点（始终受缩放影响）
-      this.ctx.beginPath();
-      this.ctx.arc(station.x, station.y, 4 / this.scale, 0, 2 * Math.PI);
-      this.ctx.fillStyle = 'white';
-      this.ctx.fill();
-      this.ctx.strokeStyle = LINE_COLORS[station.line] || '#999';
-      this.ctx.lineWidth = 2 / this.scale;
-      this.ctx.stroke();
+  for (const station of this.stations) {
+    // 绘制圆点（不变）
+    this.ctx.beginPath();
+    this.ctx.arc(station.x, station.y, 4 / this.scale, 0, 2 * Math.PI);
+    this.ctx.fillStyle = 'white';
+    this.ctx.fill();
+    this.ctx.strokeStyle = LINE_COLORS[station.line] || '#999';
+    this.ctx.lineWidth = 2 / this.scale;
+    this.ctx.stroke();
 
-      // 判断是否需要绘制站名
-      let shouldDrawLabel = false;
-      if (showAllLabels) {
-        shouldDrawLabel = true;
-      } else if (IMPORTANT_STATION_IDS.has(station.id)) {
-        shouldDrawLabel = true;
+    // 判断是否显示文字
+    let shouldDrawLabel = false;
+    if (showAllLabels) {
+      shouldDrawLabel = true;
+    } else if (IMPORTANT_STATION_IDS.has(station.id)) {
+      shouldDrawLabel = true;
+    }
+
+    if (shouldDrawLabel) {
+      // 获取偏移量：优先使用自定义偏移，否则使用默认值 (6, -4)
+      const offset = station.label_offset || { x: 6, y: -4 };
+      const screenX = station.x * this.scale + this.offsetX;
+      const screenY = station.y * this.scale + this.offsetY;
+
+      // 计算字体大小（不变）
+      let fontSize;
+      if (this.scale >= this.labelThreshold) {
+        fontSize = baseFontSize;
+      } else {
+        fontSize = Math.max(minFontSize, baseFontSize * (this.scale / this.labelThreshold));
       }
 
-      if (shouldDrawLabel) {
-        // 计算屏幕坐标（考虑平移和缩放）
-        const screenX = station.x * this.scale + this.offsetX;
-        const screenY = station.y * this.scale + this.offsetY;
-
-        // 计算字体大小：大于阈值时固定，小于阈值时动态缩小
-        let fontSize;
-        if (this.scale >= this.labelThreshold) {
-          fontSize = baseFontSize;
-        } else {
-          fontSize = Math.max(minFontSize, baseFontSize * (this.scale / this.labelThreshold));
-        }
-
-        // 保存上下文，重置变换，直接绘制文字（不受画布缩放影响）
-        this.ctx.save();
-        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-        this.ctx.font = `${fontSize}px "Microsoft YaHei"`;
-        this.ctx.fillStyle = '#333';
-        this.ctx.fillText(station.name, screenX + 6, screenY - 4);
-        this.ctx.restore();
-      }
+      // 重置变换并绘制文字
+      this.ctx.save();
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.font = `${fontSize}px "Microsoft YaHei"`;
+      this.ctx.fillStyle = '#333';
+      this.ctx.fillText(station.name, screenX + offset.x, screenY + offset.y);
+      this.ctx.restore();
     }
   }
+}
 
   drawTrains() {
     this.currentTrainPositions = [];
