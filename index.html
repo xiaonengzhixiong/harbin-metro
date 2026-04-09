@@ -38,7 +38,7 @@
                 <button id="playPauseBtn">⏸ 暂停</button>
             </div>
 
-            <!-- 时间控制区域：标签+数值一行，滑块单独一行 -->
+            <!-- 时间控制区域 -->
             <div class="slider-group">
                 <div class="slider-header">
                     <span class="slider-label">时间</span>
@@ -55,10 +55,27 @@
             </div>
 
             <div id="tooltip" class="tooltip" style="display: none;"></div>
+
             <div class="logo-container">
                 <img src="哈尔滨地铁.png" alt="哈尔滨地铁" class="metro-logo">
+                <a href="#" id="docLink" class="doc-link">使用说明</a>
+            </div>
         </div>
     </div>
+
+    <!-- 模态框（说明文档弹窗） -->
+    <div id="docModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>哈尔滨地铁运营可视化说明</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- 动态填充内容 -->
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
